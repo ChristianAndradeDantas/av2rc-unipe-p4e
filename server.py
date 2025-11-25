@@ -14,23 +14,26 @@ while True:
         # Recebe a mensagem do cliente (requisição HTTP)
         message = connectionSocket.recv(1024).decode('utf-8')
         filename = message.split()[1]
-        f = open(filename[1:], "r", encoding="utf-8")
-        file = f.read()
+        f = open(filename[1:])
+        html = f.read()
         outputdata = (
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/html\r\n"
-            "Content-Length: 13\r\n"
+            f"Content-Length: {len(html)}\r\n"
             "\r\n"
             "Hello, world!" +
-            file
+            html
         )
-        #
-# Envia o conteúdo do arquivo ao cliente
+        #Envia a linha de status do cabeçalho HTTP
+        
+        # Envia o conteúdo do arquivo ao cliente
         for i in range(0, len(outputdata)):
             connectionSocket.send(outputdata[i].encode())
-            connectionSocket.send("\r\n".encode())
-            # Fecha a conexão com o cliente
-            connectionSocket.close()
+
+        connectionSocket.send("\r\n".encode())
+        
+        # Fecha a conexão com o cliente
+        connectionSocket.close()
     except IOError:
 # Envia mensagem de erro 404 se o arquivo não for encontrado
         noFileError = (
